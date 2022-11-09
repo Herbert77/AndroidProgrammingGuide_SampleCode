@@ -2,13 +2,20 @@ package com.cocoa.geoquiz
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.PersistableBundle
+import android.util.Log
 import android.view.Gravity
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import java.security.Key
 
 private const val TAG = "MainActivity"
+private const val KEY_INDEX = "index"
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,20 +25,25 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nextButton: ImageButton
     private lateinit var questionTextView: TextView
 
-    private val questionBank = listOf(
-        Question(R.string.question_australia, true),
-        Question(R.string.question_oceans, true),
-        Question(R.string.question_asia, true),
-        Question(R.string.question_africa, false),
-        Question(R.string.question_mideast, false))
-
-    private var currentIndex = 0
+    // 把viewModel声明为懒加载属性
+    private val quizViewModel: QuizViewModel by lazy {
+        ViewModelProvider(this).get(QuizViewModel::class.java)
+    }
 
     // activity的状态方法
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        android.util.Log.d(TAG, "onCreate: called")
+        Log.d(TAG, "onCreate: called")
         setContentView(R.layout.activity_main)
+
+        // 从 savedInstanceState 中取出可能存在的 bundle 数据
+        val currentIndex = savedInstanceState?.getInt(KEY_INDEX) ?: 0
+        quizViewModel.currentIndex = currentIndex
+
+        // 把 viewModel 和当前 Activity 关联起来
+//        val provider: ViewModelProvider = ViewModelProvider(this)
+//        val quizViewModel = provider.get(QuizViewModel::class.java)
+//        Log.d(TAG, "Got a QuizViewModel: $quizViewModel.")
 
         trueButton = findViewById<Button>(R.id.true_button)
         falseButton = findViewById<Button>(R.id.false_button)
@@ -49,22 +61,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         preButton.setOnClickListener {
-            if (currentIndex > 0) {
-                currentIndex -= 1
-            }
-            else {
-                currentIndex = questionBank.size - 1
-            }
+            quizViewModel.moveToPrev()
             updateQuestion()
         }
 
         nextButton.setOnClickListener {
-            currentIndex = (currentIndex + 1) % questionBank.size
+            quizViewModel.moveToNext()
             updateQuestion()
         }
 
         questionTextView.setOnClickListener {
-            currentIndex = (currentIndex + 1) % questionBank.size
+            quizViewModel.moveToNext()
             updateQuestion()
         }
 
@@ -86,6 +93,13 @@ class MainActivity : AppCompatActivity() {
         android.util.Log.d(TAG, "onPause: called")
     }
 
+    // 覆写该方法,当该 activity 进入 Stoped 状态时, 该方法会被调用, 把 活动的 数据保存在 bundle 中, 如果该 activity 被重新创建时, 会通过 onCreate() 方法,恢复保存的数据.
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.i(TAG, "onSaveInstanceState: ")
+        outState.putInt(KEY_INDEX, quizViewModel.currentIndex)
+    }
+
     override fun onStop() {
         super.onStop()
         android.util.Log.d(TAG, "onStop: called")
@@ -98,13 +112,13 @@ class MainActivity : AppCompatActivity() {
 
     // 更新问题
     private fun updateQuestion() {
-        val questionTextResId = questionBank[currentIndex].textResId
+        val questionTextResId = quizViewModel.currentQuestionText
         questionTextView.setText(questionTextResId)
     }
 
     // 根据用户输入答案和标准答案进行对比, 显示结果提示
     private fun checkAnswer(userAnswer: Boolean) {
-        val correctAnswer = questionBank[currentIndex].answer
+        val correctAnswer = quizViewModel.currentQuestionAnswer
 
         val toastMsgResId = if (userAnswer == correctAnswer) {
             R.string.correct_toast
