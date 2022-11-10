@@ -11,7 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+import java.lang.Exception
 import java.security.Key
 
 private const val TAG = "MainActivity"
@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
 
     // 把viewModel声明为懒加载属性
     private val quizViewModel: QuizViewModel by lazy {
+        // 把 viewModel 和当前 Activity 关联起来
         ViewModelProvider(this).get(QuizViewModel::class.java)
     }
 
@@ -39,11 +40,6 @@ class MainActivity : AppCompatActivity() {
         // 从 savedInstanceState 中取出可能存在的 bundle 数据
         val currentIndex = savedInstanceState?.getInt(KEY_INDEX) ?: 0
         quizViewModel.currentIndex = currentIndex
-
-        // 把 viewModel 和当前 Activity 关联起来
-//        val provider: ViewModelProvider = ViewModelProvider(this)
-//        val quizViewModel = provider.get(QuizViewModel::class.java)
-//        Log.d(TAG, "Got a QuizViewModel: $quizViewModel.")
 
         trueButton = findViewById<Button>(R.id.true_button)
         falseButton = findViewById<Button>(R.id.false_button)
@@ -66,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         nextButton.setOnClickListener {
-            quizViewModel.moveToNext()
+//            quizViewModel.moveToNext()
             updateQuestion()
         }
 
@@ -112,6 +108,7 @@ class MainActivity : AppCompatActivity() {
 
     // 更新问题
     private fun updateQuestion() {
+//        Log.d(TAG, "updateQuestion: ", Exception())
         val questionTextResId = quizViewModel.currentQuestionText
         questionTextView.setText(questionTextResId)
     }

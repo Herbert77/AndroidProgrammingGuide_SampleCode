@@ -43,5 +43,4 @@ class QuizViewModel: ViewModel() {
             questionBank.size - 1
         }
     }
-
 }
