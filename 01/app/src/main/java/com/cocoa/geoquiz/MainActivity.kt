@@ -1,8 +1,10 @@
 package com.cocoa.geoquiz
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.app.Instrumentation
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -12,6 +14,7 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import java.lang.Exception
@@ -37,6 +40,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // activity的状态方法
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate: called")
@@ -80,8 +84,13 @@ class MainActivity : AppCompatActivity() {
         cheatButton.setOnClickListener {
             // start cheatActivity
             val intent = CheatActivity.newIntent(this, quizViewModel.currentQuestionAnswer)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                val options = ActivityOptions.makeClipRevealAnimation(it, 0, 0, it.width, it.height)
 //            startActivity(intent)
-            startActivityForResult(intent, REQUEST_CODE_CHEAT)
+                startActivityForResult(intent, REQUEST_CODE_CHEAT, options.toBundle())
+            } else {
+                startActivityForResult(intent, REQUEST_CODE_CHEAT)
+            }
         }
 
         updateQuestion()
