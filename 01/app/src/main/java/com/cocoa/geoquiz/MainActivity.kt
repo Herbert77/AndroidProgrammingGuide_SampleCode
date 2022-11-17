@@ -1,5 +1,8 @@
 package com.cocoa.geoquiz
 
+import android.app.Activity
+import android.app.Instrumentation
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -16,6 +19,7 @@ import java.security.Key
 
 private const val TAG = "MainActivity"
 private const val KEY_INDEX = "index"
+private const val REQUEST_CODE_CHEAT = 0
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var falseButton: Button
     private lateinit var preButton: ImageButton
     private lateinit var nextButton: ImageButton
+    private lateinit var cheatButton: Button
     private lateinit var questionTextView: TextView
 
     // 把viewModel声明为懒加载属性
@@ -45,6 +50,7 @@ class MainActivity : AppCompatActivity() {
         falseButton = findViewById<Button>(R.id.false_button)
         preButton = findViewById(R.id.previous_button)
         nextButton = findViewById(R.id.next_button)
+        cheatButton = findViewById(R.id.cheat_button)
         questionTextView = findViewById(R.id.question_text_view)
 
         // 添加控件监听器
@@ -62,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         nextButton.setOnClickListener {
-//            quizViewModel.moveToNext()
+            quizViewModel.moveToNext()
             updateQuestion()
         }
 
@@ -71,8 +77,30 @@ class MainActivity : AppCompatActivity() {
             updateQuestion()
         }
 
+        cheatButton.setOnClickListener {
+            // start cheatActivity
+            val intent = CheatActivity.newIntent(this, quizViewModel.currentQuestionAnswer)
+//            startActivity(intent)
+            startActivityForResult(intent, REQUEST_CODE_CHEAT)
+        }
+
         updateQuestion()
     }
+
+    // 覆写该方法,接收来自子activity返回的结果
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode != Activity.RESULT_OK) {
+            return
+        }
+
+        if (requestCode == REQUEST_CODE_CHEAT) {
+//            quizViewModel.isCheater = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+            quizViewModel.currentQuestionIsCheating = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+        }
+    }
+
 
     override fun onStart() {
         super.onStart()
@@ -117,14 +145,21 @@ class MainActivity : AppCompatActivity() {
     private fun checkAnswer(userAnswer: Boolean) {
         val correctAnswer = quizViewModel.currentQuestionAnswer
 
-        val toastMsgResId = if (userAnswer == correctAnswer) {
-            R.string.correct_toast
-        }
-        else {
-            R.string.incorrect_toast
+//        val toastMsgResId = if (userAnswer == correctAnswer) {
+//            R.string.correct_toast
+//        }
+//        else {
+//            R.string.incorrect_toast
+//        }
+
+        val messageResId = when {
+//            quizViewModel.isCheater -> R.string.judgement_toast
+            quizViewModel.currentQuestionIsCheating -> R.string.judgement_toast
+            (userAnswer == correctAnswer) -> R.string.correct_toast
+            else -> R.string.incorrect_toast
         }
 
-        var toast = Toast.makeText(this, toastMsgResId, Toast.LENGTH_SHORT)
+        var toast = Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
         toast.setGravity(Gravity.BOTTOM, 0, 0)
         toast.show()
     }
