@@ -5,6 +5,8 @@
       <map>
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.12314814814814815" />
         <entry key="app/src/main/res/layout/fragment_crime.xml" value="0.22010869565217392" />
+        <entry key="app/src/main/res/layout/fragment_crime_list.xml" value="0.16210739614994935" />
+        <entry key="app/src/main/res/layout/list_item_crime.xml" value="0.16210739614994935" />
       </map>
     </option>
   </component>
