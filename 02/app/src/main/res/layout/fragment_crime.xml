@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="16dp">
+    android:layout_margin="15dp" >
 
     <TextView
         style="?android:listSeparatorTextViewStyle"
@@ -28,7 +28,7 @@
         android:id="@+id/crime_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="Wed nov 14 est 2022" />
+        tools:text="2023.06.12" />
 
     <CheckBox
         android:id="@+id/crime_solved"

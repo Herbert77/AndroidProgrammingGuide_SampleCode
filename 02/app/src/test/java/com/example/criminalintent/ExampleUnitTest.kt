@@ -1,4 +1,4 @@
-package com.cocoa.criminalintent
+package com.example.criminalintent
 
 import org.junit.Test
 
