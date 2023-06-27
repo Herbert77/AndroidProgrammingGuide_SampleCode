@@ -14,13 +14,17 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.criminalintent.fragment.DatePickerFragment
 import org.w3c.dom.Text
+import java.util.Date
 import java.util.UUID
 
 private const val TAG = "CrimeFragment"
 private const val ARG_CRIME_ID = "crime_id"
+private const val DIALOG_DATE = "DialogDate"
+private const val REQUEST_DATE = 0
 
-class CrimeFragment : Fragment() {
+class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
 
     private lateinit var crime: Crime
     private lateinit var titleField: EditText
@@ -81,16 +85,17 @@ class CrimeFragment : Fragment() {
     }
 
     private fun configDateButton() {
-        dateButton.apply {
-            text = crime.date.toString()
-            isEnabled = false
-        }
+//        dateButton.apply {
+//            text = crime.date.toString()
+//            isEnabled = false
+//        }
     }
 
     override fun onStart() {
         super.onStart()
         addTextChangedListenerForTitleField()
         setOnCheckedChangeListenerForSolvedCheckBox()
+        setOnClickListenerForDateButton()
     }
 
     private fun updateUI() {
@@ -125,6 +130,15 @@ class CrimeFragment : Fragment() {
         }
     }
 
+    private fun setOnClickListenerForDateButton() {
+        dateButton.setOnClickListener {
+            DatePickerFragment.newInstance(crime.date).apply {
+                setTargetFragment(this@CrimeFragment, REQUEST_DATE)
+                show(this@CrimeFragment.requireFragmentManager(), DIALOG_DATE)
+            }
+        }
+    }
+
     companion object {
         fun newInstance(crimeId: UUID): CrimeFragment {
             val args = Bundle().apply {
@@ -134,5 +148,10 @@ class CrimeFragment : Fragment() {
                 arguments = args
             }
         }
+    }
+
+    override fun onDateSelected(date: Date) {
+        crime.date = date
+        updateUI()
     }
 }
