@@ -2,11 +2,15 @@ package com.example.criminalintent
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import com.example.criminalintent.database.CrimeRepository
 import kotlinx.coroutines.runBlocking
+import java.util.UUID
 
-class MainActivity : AppCompatActivity() {
+private const val TAG = "MainActivity"
+
+class MainActivity : AppCompatActivity(), CrimeListFragment.Callbacks {
 
     private lateinit var insertItemButton: Button
 
@@ -31,4 +35,26 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.beginTransaction().add(R.id.fragment_container, fragment).commit()
         }
     }
+
+    override fun onCrimeSelected(crimeId: UUID) {
+        val fragment = CrimeFragment.newInstance(crimeId)
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null)
+            .commit()
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
