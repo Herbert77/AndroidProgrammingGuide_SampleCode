@@ -4,6 +4,9 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.View.VISIBLE
 import android.view.ViewGroup
@@ -11,6 +14,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.Toolbar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -32,19 +37,18 @@ class CrimeListFragment : Fragment() {
     private var callbacks: Callbacks? = null
 
     private lateinit var crimeRecyclerView: RecyclerView
-//    private var adapter: CrimeAdapter? = null
-
-//    val crimeList: List<Crime> = listOf(Crime(title = "This is a crime."))
+    private lateinit var noCrimeTipTextView: TextView
+    private lateinit var addNewCrimeButton: Button
     private var adapter: CrimeAdapter? = CrimeAdapter(emptyList())
 
     private val crimeListViewModel: CrimeListViewModel by lazy {
         ViewModelProvider(this).get(CrimeListViewModel::class.java)
     }
 
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        Log.d(TAG, "Total Crimes: ${crimeListViewModel.crimes.size}")
-//    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -54,6 +58,13 @@ class CrimeListFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_crime_list, container, false)
         findCrimeRecyclerViewInView(view)
+        findNoCrimeTipTextViewInView(view)
+        findAddNewCrimeButtonInView(view)
+
+//        val appCompatActivity = activity as AppCompatActivity
+//        val appBar = appCompatActivity.supportActionBar
+//        appBar?.setTitle(R.string.new_crime)
+
         return view
     }
 
@@ -80,13 +91,45 @@ class CrimeListFragment : Fragment() {
 //        crimeListViewModel.crimeRepository.insertCrimes()
 //    }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.fragment_crime_list, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.new_crime -> {
+                val crime = Crime()
+                crimeListViewModel.addCrime(crime)
+                callbacks?.onCrimeSelected(crime.id)
+                true
+            }
+
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
     private fun findCrimeRecyclerViewInView(view: View) {
         crimeRecyclerView = view.findViewById(R.id.crime_recycler_view)
         crimeRecyclerView.layoutManager = LinearLayoutManager(context)
 //        updateUI()
     }
 
-//    private fun updateUI() {
+
+    private fun findNoCrimeTipTextViewInView(view: View) {
+        noCrimeTipTextView = view.findViewById(R.id.no_crime_tip)
+    }
+
+    private fun findAddNewCrimeButtonInView(view: View) {
+        addNewCrimeButton = view.findViewById(R.id.add_crime)
+        addNewCrimeButton.setOnClickListener {
+            val crime = Crime()
+            crimeListViewModel.addCrime(crime)
+            callbacks?.onCrimeSelected(crime.id)
+        }
+    }
+
+    //    private fun updateUI() {
 //        val crimes = crimeListViewModel.crimes
 //        adapter = CrimeAdapter(crimes)
 //        crimeRecyclerView.adapter = adapter
@@ -94,6 +137,14 @@ class CrimeListFragment : Fragment() {
     private fun updateUI(crimes: List<Crime>) {
         adapter = CrimeAdapter(crimes)
         crimeRecyclerView.adapter = adapter
+
+        if (crimes.isEmpty()) {
+            noCrimeTipTextView.visibility = View.VISIBLE
+            addNewCrimeButton.visibility = View.VISIBLE
+        } else {
+            noCrimeTipTextView.visibility = View.INVISIBLE
+            addNewCrimeButton.visibility = View.INVISIBLE
+        }
     }
 
     companion object {
@@ -120,7 +171,7 @@ class CrimeListFragment : Fragment() {
             dateTextView.text = this.crime.date.toString()
             solvedImageView.visibility = if (crime.isSolved) {
                 View.VISIBLE
-            } else{
+            } else {
                 View.GONE
             }
         }
@@ -183,7 +234,7 @@ class CrimeListFragment : Fragment() {
 //            if (crime.requiresPolice) {
 //                (holder as RequiresPoliceCrimeHolder).bind(crime)
 //            } else {
-                (holder as CrimeHolder).bind(crime)
+            (holder as CrimeHolder).bind(crime)
 //            }
         }
     }
