@@ -17,7 +17,8 @@ class CrimeRepository private constructor(context: Context) {
         context.applicationContext,
         CrimeDatabase::class.java,
         DATABASE_NAME
-    ).build()
+    ).addMigrations(migration_1_2)
+        .build()
 
     private val crimeDao = database.crimeDao()
     private val executor = Executors.newSingleThreadExecutor()
@@ -53,8 +54,7 @@ class CrimeRepository private constructor(context: Context) {
         }
 
         fun get(): CrimeRepository {
-            return INSTANCE ?:
-            throw IllegalStateException("CrimeRepository must be initialized!!")
+            return INSTANCE ?: throw IllegalStateException("CrimeRepository must be initialized!!")
         }
     }
 }
