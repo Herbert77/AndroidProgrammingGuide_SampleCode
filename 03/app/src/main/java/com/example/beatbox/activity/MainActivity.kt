@@ -1,4 +1,4 @@
-package com.example.beatbox
+package com.example.beatbox.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -6,6 +6,10 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.beatbox.model.BeatBox
+import com.example.beatbox.R
+import com.example.beatbox.model.Sound
+import com.example.beatbox.viewmodel.SoundViewModel
 import com.example.beatbox.databinding.ActivityMainBinding
 import com.example.beatbox.databinding.ListItemSoundBinding
 
@@ -25,9 +29,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        beatBox.release()
+    }
+
     private inner class SoundHolder(private val binding: ListItemSoundBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
-            binding.viewModel = SoundViewModel()
+            binding.viewModel = SoundViewModel(beatBox)
         }
 
         fun bind(sound: Sound) {
