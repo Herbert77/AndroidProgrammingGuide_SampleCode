@@ -1,9 +1,30 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.BeatBox" parent="Theme.Material3.DayNight.NoActionBar">
+    <!--    <style name="Base.Theme.BeatBox" parent="Theme.Material3.DayNight.NoActionBar">-->
+    <style name="Base.Theme.BeatBox" parent="Theme.MaterialComponents.Bridge">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/red</item>
+        <item name="colorPrimaryDark">@color/dark_red</item>
+        <item name="colorAccent">@color/gray</item>
+
+        <item name="android:windowBackground">@color/soothing_blue</item>
+        <item name="buttonStyle">@style/BeatBoxButton</item>
     </style>
 
     <style name="Theme.BeatBox" parent="Base.Theme.BeatBox" />
+
+    <style name="BeatBoxButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@color/dark_blue</item>
+    </style>
+
+    <!-- 通过命名表示样式继承 -->
+<!--    <style name="BeatBoxButton.Strong">-->
+<!--        <item name="android:textStyle">bold</item>-->
+<!--    </style>-->
+
+    <!-- 通过指定父样式的方式-->
+    <!--    <style name="StrongBeatBoxButton" parent="@style/BeatBoxButton">-->
+    <!--        <item name="android:textStyle">bold</item>-->
+    <!--    </style>-->
+
 </resources>
