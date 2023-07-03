@@ -14,7 +14,9 @@
     <style name="Theme.BeatBox" parent="Base.Theme.BeatBox" />
 
     <style name="BeatBoxButton" parent="Widget.AppCompat.Button">
-        <item name="android:background">@color/dark_blue</item>
+<!--        <item name="android:background">@color/dark_blue</item>-->
+<!--        <item name="android:background">@drawable/button_beat_box_normal</item>-->
+        <item name="android:background">@drawable/button_beat_box</item>
     </style>
 
     <!-- 通过命名表示样式继承 -->
